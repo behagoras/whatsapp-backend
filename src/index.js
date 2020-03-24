@@ -1,17 +1,16 @@
 const express = require('express')
-const bodyParser = require('body-parser')
 const app = express()
+const config = require('./config')
 
 // middlewares
-app.use(bodyParser())
+app.use(express.json())
 
 // Rutas
 const userRoutes = require('./routes/users')
 
 // instanciar rutas
 userRoutes(app)
-bodyParser(app)
 
-app.listen(3000, () => {
-  console.log('app listening on port http://localhost:3000')
+app.listen(config.port, () => {
+  console.log(`App listening on port ${config.host}:${config.port}`)
 })
