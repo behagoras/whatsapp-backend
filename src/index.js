@@ -1,6 +1,9 @@
 const express = require('express')
 const app = express()
 const config = require('./config').config
+const cors = require('cors')
+
+app.use(cors())
 
 // middlewares
 app.use(express.json())
