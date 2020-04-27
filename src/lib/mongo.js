@@ -34,10 +34,17 @@ class MongoLib {
     return MongoLib.connection
   }
 
-  getAll (collection, query) {
+  getAll (collection, query, { page = 1, limit = 50 }) {
+    console.log(page)
+    console.log(limit)
+    console.log(page * limit)
+
     return this.connect().then((db) => db
       .collection(collection)
       .find(query)
+      .skip(page * limit)
+      .limit(limit)
+      .sort({ name: 1 })
       .toArray())
   }
 

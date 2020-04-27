@@ -9,11 +9,42 @@ async function clientsApi (app) {
 
   // routes
   router.get('/', async (req, res, next) => {
-    const clients = await clientsService.getClients()
-    res.json({
-      code: '200',
-      data: clients
-    })
+    // http://localhost:3000/api/clients?page=2&limit=100
+
+    const page = req.query.page ? parseInt(req.query.page) : 1
+    const limit = req.query.limit ? parseInt(req.query.limit) : 20
+    const start = (page - 1) * limit
+    // const end = page * limit
+    const clients = await clientsService.getClients({ page, limit })
+
+    const results = {}
+    results.results = clients
+    // results.results = clients.slice(start, end)
+    // results.length = results.results.length
+
+    console.log('clients.length', clients.length)
+
+    console.log('req.baseUrl', req.baseUrl)
+    console.log("req.get('host')", req.get('host'))
+
+    const host = req.get('host')
+    const { baseUrl } = req
+
+    // if (end < clients.length) {
+    results.next = {
+      page: `${host}${baseUrl}/?page=${page + 1}&limit=${limit}`,
+      limit
+    }
+    // }
+
+    if (start > 0) {
+      results.previous = {
+        page: `${host}${baseUrl}/?page=${page - 1}&limit=${limit}`,
+        limit
+      }
+    }
+
+    res.status(200).json(results)
   })
   router.get('/:client', async (req, res, next) => {
     const { data } = req.body
