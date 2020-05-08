@@ -46,6 +46,29 @@ async function clientsApi (app) {
 
     res.status(200).json(results)
   })
+
+  router.get('/send/:to/:minutes', async (req, res, next) => {
+    const { io } = app
+
+    const to = req.params.to || 1
+    const minutes = req.params.minutes || 1
+
+    io.on('connection', (socket) => {
+      console.log('Client connected to socket with id', socket.id)
+
+      socket.on('chat', (data) => {
+        console.log(data)
+      })
+      // console.log(socket)
+    })
+    io.sockets.emit('sendBulkMessages', { to, minutes })
+    res.json({
+      to,
+      minutes
+    //  io
+    })
+  })
+
   router.get('/:client', async (req, res, next) => {
     const { data } = req.body
     res.json({
