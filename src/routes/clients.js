@@ -69,20 +69,39 @@ async function clientsApi (app) {
     })
   })
 
+  router.post('/send', async (req, res, next) => {
+    const { io } = app
+
+    const {
+      to = 0,
+      minutes = 1,
+      message: messageArray,
+      campaign
+    } = req.body
+    console.log('file: clients.js ~ line 81 ~ router.post ~ req.body', req.body)
+    const message = messageArray.reduce((accumulator, currentValue) => accumulator + '\n\n' + currentValue)
+    io.on('connection', (socket) => {
+      console.log('Client connected to socket with id', socket.id)
+
+      socket.on('chat', (data) => {
+        console.log(data)
+      })
+    })
+    io.sockets.emit('sendBulkMessages', { to, minutes, message, campaign })
+    res.json({
+      to,
+      minutes,
+      message,
+      campaign
+    })
+  })
+
   router.get('/:client', async (req, res, next) => {
     const { data } = req.body
     res.json({
       Message: 'It works',
       data,
       client: req.params.client,
-      code: '200'
-    })
-  })
-
-  router.post('/', async (req, res, next) => {
-    res.json({
-      Message: 'It works',
-      user: req.body.user,
       code: '200'
     })
   })
