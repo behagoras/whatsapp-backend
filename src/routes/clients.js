@@ -75,11 +75,16 @@ async function clientsApi (app) {
     const {
       to = 0,
       minutes = 1,
-      message: messageArray,
+      // message: messageArray,
+      messages: messagesWithArray,
       campaign
     } = req.body
     console.log('file: clients.js ~ line 81 ~ router.post ~ req.body', req.body)
-    const message = messageArray.reduce((accumulator, currentValue) => accumulator + '\n\n' + currentValue)
+    const messages = messagesWithArray.map(
+      (messageArray) => messageArray.reduce(
+        (accumulator, currentValue) => accumulator + '\n\n' + currentValue)
+    )
+    // const message = messageArray.reduce((accumulator, currentValue) => accumulator + '\n\n' + currentValue)
     io.on('connection', (socket) => {
       console.log('Client connected to socket with id', socket.id)
 
@@ -87,11 +92,11 @@ async function clientsApi (app) {
         console.log(data)
       })
     })
-    io.sockets.emit('sendBulkMessages', { to, minutes, message, campaign })
+    io.sockets.emit('sendBulkMessages', { to, minutes, messages, campaign })
     res.json({
       to,
       minutes,
-      message,
+      messages,
       campaign
     })
   })
